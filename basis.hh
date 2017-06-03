@@ -31,7 +31,6 @@ void genBasis(int p, vector<Polynomial> &B, vector<Polynomial> &dB) {
 
         dB.push_back(B[i].derivative()); 
 
-        dB[i].print(); 
     }
 }
 

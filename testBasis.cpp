@@ -49,4 +49,10 @@ int main() {
 
     file.close();
 
+   	auto sum = [] (double a, double b) -> double {return a + b; }; 
+
+   	double ans = sum(1, 2); 
+
+   	cout << "ans = "  << ans << endl; 
+
 }
