@@ -1,4 +1,4 @@
-#include "polynomial.hh"
+#include "Polynomial.hh"
 
 // Polynomial::Polynomial() {}
 
