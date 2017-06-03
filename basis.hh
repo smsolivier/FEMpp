@@ -1,3 +1,14 @@
+#include <vector>
+#include <iostream> 
+#include <cmath>
+
+#include "Polynomial.hh"
+#include "helper.hh"
+#include "gauss.hh"
+#include "printVector.hh"
+
+#include <fstream>
+
 void genBasis(int p, vector<Polynomial> &B, vector<Polynomial> &dB) {
 
 	vector<double> x = linspace(-1, 1, p); // local points within element 

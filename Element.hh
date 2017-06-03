@@ -4,6 +4,8 @@
 
 // #include "helper.hh"
 #include "Polynomial.hh"
+#include "quad.hh"
+#include "basis.hh"
 
 using namespace std; 
 
@@ -14,16 +16,32 @@ public:
 	double start, end; 
 	int p; 
 
-	Element(double start, double end, int p) : start(start), end(end), p(p) {}; 
-	double Jacobian(double xi); 
+	Element(double start, double end, int p); // constructor 
+
+	double Jacobian(double xi); // function for computing the jacobian 
+	void genMass(); // generate mass matrix 
+	void genStiff(); // generate stiffness matrix 
 
 	vector<double> xglob; // global x values within element 
 
+	// store basis functions 
 	vector<Polynomial> B; 
 	vector<Polynomial> dB; 
 
-	vector<vector<double>> A(p, vector<double>(p));
+	// local system 
+	vector<vector<double>> A; 
+	vector<double> rhs; 
 
-	vector<double> rhs(p);  
+	// store solution 
+	vector<double> f; 
+
+	// store previous solution 
+	vector<double> f_prev; 
+
+	// mass matrix
+	vector<vector<double>> M; 
+
+	// stiffness matrix 
+	vector<vector<double>> S; 
 
 };

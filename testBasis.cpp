@@ -1,16 +1,3 @@
-#include <vector>
-#include <iostream> 
-#include <cmath>
-
-using namespace std; 
-
-#include "Polynomial.hh"
-#include "helper.hh"
-#include "gauss.hh"
-#include "printVector.hh"
-
-#include <fstream>
-
 #include "basis.hh" 
 
 int main() {

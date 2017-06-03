@@ -1,3 +1,6 @@
+#ifndef Polynomial_hh
+#define Polynomial_hh
+
 #include <vector> 
 #include <iostream>
 #include <cmath> 
@@ -19,3 +22,5 @@ public:
 	vector<double> coef; 
 	int p; // polynomial order 
 }; 
+
+#endif
