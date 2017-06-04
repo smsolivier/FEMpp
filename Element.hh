@@ -1,11 +1,9 @@
-#include <vector> 
-#include <iostream>
-#include <cmath> 
+#ifndef Element_hh
+#define Element_hh
 
-// #include "helper.hh"
+#include <vector>
+
 #include "Polynomial.hh"
-#include "quad.hh"
-#include "basis.hh"
 
 using namespace std; 
 
@@ -21,6 +19,9 @@ public:
 	double Jacobian(double xi); // function for computing the jacobian 
 	void genMass(); // generate mass matrix 
 	void genStiff(); // generate stiffness matrix 
+	double xiToX(double xi); // map xi to global x 
+	double evaluate(double xi); // evaluate f at xi 
+	void solve(double &x, double &f); 
 
 	vector<double> xglob; // global x values within element 
 
@@ -45,3 +46,5 @@ public:
 	vector<vector<double>> S; 
 
 };
+
+#endif 

@@ -1,3 +1,10 @@
+#ifndef printVector_hh
+#define printVector_hh
+
+#include <iostream>
+
+using namespace std; 
+
 void printVector(vector<double> x) {
 
     for (int i=0; i<x.size(); i++) {
@@ -18,3 +25,5 @@ void printVector(vector<vector<double>> x) {
         cout << endl; 
     }
 }
+
+#endif 

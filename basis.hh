@@ -1,3 +1,6 @@
+#ifndef basis_hh
+#define basis_hh
+
 #include <vector>
 #include <iostream> 
 #include <cmath>
@@ -5,7 +8,7 @@
 #include "Polynomial.hh"
 #include "helper.hh"
 #include "gauss.hh"
-#include "printVector.hh"
+// #include "printVector.hh"
 
 #include <fstream>
 
@@ -45,3 +48,4 @@ void genBasis(int p, vector<Polynomial> &B, vector<Polynomial> &dB) {
     }
 }
 
+#endif 

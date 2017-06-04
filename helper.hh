@@ -1,4 +1,11 @@
-vector<double> linspace(double start, double end, int N) {
+#ifndef helper_hh
+#define helper_hh
+
+#include <vector>
+
+using namespace std; 
+
+inline vector<double> linspace(double start, double end, int N) {
 	/* generate N evenly spaced points between [start, end] */ 
 
 	vector<double> x(N); 
@@ -14,3 +21,5 @@ vector<double> linspace(double start, double end, int N) {
 	return x; 
 
 }
+
+#endif 

@@ -1,3 +1,10 @@
+#include <vector> 
+#include <iostream>
+#include <cmath> 
+
+#include "quad.hh"
+#include "basis.hh"
+
 #include "Element.hh" 
 
 using namespace std; 
@@ -77,12 +84,62 @@ void Element::genStiff() {
 	}
 }
 
-int main() {
+double Element::xiToX(double xi) {
 
-	Element el(0, 1, 4); 
+	double sum = 0; 
 
-	el.genStiff(); 
+	for (int i=0; i<p; i++) {
 
-	printVector(el.S); 
+		sum += xglob[i] * B[i].evaluate(xi); 
+	}
+
+	return sum; 
 
 }
+
+double Element::evaluate(double xi) {
+
+	double sum = 0; 
+	for (int i=0; i<p; i++) {
+
+		sum += f[i] * B[i].evaluate(xi); 
+
+	}
+
+	return sum; 
+
+}
+
+void Element::solve(double &xout, double &fout) {
+
+	f_prev = f; // make copy of old one 
+
+	int err = gauss(p, A, f, rhs); // solve system 
+
+	xout = xiToX(0); 
+	fout = evaluate(0); 
+
+	// reset A, rhs 
+	for (int i=0; i<p; i++) {
+
+		for (int j=0; j<p; j++) {
+
+			A[i][j] = 0; 
+
+		}
+
+		rhs[i] = 0; 
+
+	}
+
+}
+
+// int main() {
+
+// 	Element el(0, 1, 4); 
+
+// 	el.genStiff(); 
+
+// 	printVector(el.S); 
+
+// }

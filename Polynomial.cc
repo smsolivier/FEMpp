@@ -1,6 +1,9 @@
+#include <iostream>
+#include <cmath> 
+
 #include "Polynomial.hh"
 
-// Polynomial::Polynomial() {}
+using namespace std; 
 
 Polynomial::Polynomial(vector<double> ccoef) {
 
@@ -57,6 +60,7 @@ void Polynomial::print() {
 	for (int i=0; i<p; i++) {
 
 		cout << coef[i] << " x^" << i << " "; 
+
 	}
 
 	cout << endl; 

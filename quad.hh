@@ -1,5 +1,10 @@
+#ifndef quad_hh
+#define quad_hh
+
 #include <vector> 
 #include <cmath>
+
+using namespace std; 
 
 double GaussQuad(auto &f) {
 
@@ -27,3 +32,5 @@ double GaussQuad(auto &f) {
 	return sum; 
 
 }
+
+#endif

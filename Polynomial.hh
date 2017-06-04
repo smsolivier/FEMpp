@@ -2,15 +2,12 @@
 #define Polynomial_hh
 
 #include <vector> 
-#include <iostream>
-#include <cmath> 
 
 using namespace std; 
 
 class Polynomial {
 
 public: 
-	// Polynomial(); // empty constructor 
 	Polynomial(vector<double> coef); //constructor 
 
 	double evaluate(double x); // evaluate polynomial at x 
@@ -21,6 +18,7 @@ public:
 
 	vector<double> coef; 
 	int p; // polynomial order 
+
 }; 
 
 #endif
