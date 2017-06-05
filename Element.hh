@@ -21,9 +21,10 @@ public:
 	void genStiff(); // generate stiffness matrix 
 	double xiToX(double xi); // map xi to global x 
 	double evaluate(double xi); // evaluate f at xi 
-	void solve(double &x, double &f); 
+	void solve(vector<double> &x, vector<double> &f); 
 
 	vector<double> xglob; // global x values within element 
+	vector<double> xloc; // local x values within element 
 
 	// store basis functions 
 	vector<Polynomial> B; 
@@ -44,6 +45,8 @@ public:
 
 	// stiffness matrix 
 	vector<vector<double>> S; 
+
+	double h; // element width 
 
 };
 

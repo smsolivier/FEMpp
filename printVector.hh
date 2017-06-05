@@ -9,8 +9,12 @@ void printVector(vector<double> x) {
 
     for (int i=0; i<x.size(); i++) {
 
-        cout << x[i] << endl; 
+        cout << x[i] << " "; 
     }
+
+    cout << endl; 
+    cout << endl; 
+
 }
 
 void printVector(vector<vector<double>> x) {

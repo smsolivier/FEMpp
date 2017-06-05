@@ -7,7 +7,7 @@
 
 #include "Element.hh" 
 
-// #include "printVector.hh"
+#include "printVector.hh"
 
 using namespace std; 
 
@@ -15,6 +15,11 @@ Element::Element(double start, double end, int p) : start(start), end(end), p(p)
 
 	// generate global points 
 	xglob = linspace(start, end, p); 
+
+	// local points 
+	xloc = linspace(-1, 1, p); 
+
+	h = end - start; // element width 
 
 	// get basis functions 
 	genBasis(p, B, dB); 
@@ -112,20 +117,37 @@ double Element::evaluate(double xi) {
 
 }
 
-void Element::solve(double &xout, double &fout) {
+void Element::solve(vector<double> &xout, vector<double> &fout) {
+
+	// resize vectors 
+	xout.resize(p-1); 
+	fout.resize(p-1); 
+
+	// xout.resize(1); 
+	// fout.resize(1); 
 
 	f_prev = f; // make copy of old one 
 
-	for (int i=0; i<p; i++) {
-
-		f[i] = 0; 
-		
-	}
-
 	int err = gauss(p, A, f, rhs); // solve system 
 
-	xout = xiToX(0); 
-	fout = evaluate(0); 
+	// find centers between nodes 
+	vector<double> xc(p-1); 
+
+	for (int i=1; i<p; i++) {
+
+		xc[i-1] = (xloc[i] - xloc[i-1])/2 + xloc[i-1]; 
+
+	}
+
+	for (int i=0; i<p-1; i++) {
+
+		xout[i] = xiToX(xc[i]); 
+		fout[i] = evaluate(xc[i]); 
+
+	}
+
+	// xout[0] = xiToX(0); 
+	// fout[0] = evaluate(0); 
 
 	// reset A, rhs 
 	for (int i=0; i<p; i++) {

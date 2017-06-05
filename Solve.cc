@@ -6,7 +6,7 @@
 #include <fstream>
 #include <cmath>
 
-#include "printVector.hh"
+// #include "printVector.hh"
 
 using namespace std; 
 
@@ -18,6 +18,7 @@ Solve::Solve(Mesh mesh, int Nt, double tb,
 
 	dt = tb/Nt; 
 
+	cout << dt << endl; 
 	t = linspace(0, tb, Nt); 
 
 	fcount = 0; 
@@ -32,7 +33,8 @@ Solve::Solve(Mesh mesh, int Nt, double tb,
 
 double Solve::qf(double x, double t) {
 
-	return M_PI*cos(M_PI*x) + sin(M_PI*x);  
+	return a/tb*sin(M_PI*x/mesh.xb) + b*t/tb*M_PI/mesh.xb*cos(M_PI*x/mesh.xb) 
+		+ c*t/tb*sin(M_PI*x/mesh.xb); 
 
 }
 
@@ -69,13 +71,12 @@ void Solve::genLocal(Element &el, double upwind, double upwind_prev,
 	// left boundary 
 	el.rhs[0] += b*(alpha*upwind + (1-alpha)*upwind_prev); 
 
-
 }
 
 void Solve::solveSpace(double t, double t_prev) {
 
-	vector<double> xout(mesh.N);
-	vector<double> fout(mesh.N); 
+	vector<double> xout; 
+	vector<double> fout;  
 
 	for (int i=0; i<mesh.N; i++) {
 
@@ -97,12 +98,17 @@ void Solve::solveSpace(double t, double t_prev) {
 
 		}
 
-		double x_i, f_i; 
+		vector<double> x_i; 
+		vector<double> f_i; 
 
 		el.solve(x_i, f_i);
 
-		xout[i] = x_i; 
-		fout[i] = f_i;  
+		for (int j=0; j<x_i.size(); j++) {
+
+			xout.push_back(x_i[j]); 
+			fout.push_back(f_i[j]); 
+
+		}
 
 	}
 
@@ -135,24 +141,19 @@ void Solve::writeCurve(vector<double> &x, vector<double> &f) {
 	fcount += 1; 
 }
 
-double q(double x, double t) {
-
-	return M_PI*cos(M_PI*x) + sin(M_PI*x); 
-}
-
 int main() {
 
 	int Nx = 40; 
 
 	double xb = 1; 
 
-	int p = 2; 
+	int p = 4;  
 
 	Mesh mesh(Nx, xb, p); 
 
 	int Nt = 50;  
-	double tb = 1; 
-	double a = 0; 
+	double tb = .01; 
+	double a = 1; 
 	double b = 1; 
 	double c = 1; 
 	double q = 0; 
