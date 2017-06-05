@@ -1,4 +1,8 @@
 #include <vector> 
+#include <iostream> 
+#include <cmath> 
+
+using namespace std; 
 
 /* Gauss elimintation */ 
 int gauss(int dim, vector<vector<double> > &a, vector<double> &x, vector <double> &b) 

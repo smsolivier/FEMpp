@@ -7,6 +7,8 @@
 
 #include "Element.hh" 
 
+// #include "printVector.hh"
+
 using namespace std; 
 
 Element::Element(double start, double end, int p) : start(start), end(end), p(p) {
@@ -114,6 +116,12 @@ void Element::solve(double &xout, double &fout) {
 
 	f_prev = f; // make copy of old one 
 
+	for (int i=0; i<p; i++) {
+
+		f[i] = 0; 
+		
+	}
+
 	int err = gauss(p, A, f, rhs); // solve system 
 
 	xout = xiToX(0); 
@@ -133,13 +141,3 @@ void Element::solve(double &xout, double &fout) {
 	}
 
 }
-
-// int main() {
-
-// 	Element el(0, 1, 4); 
-
-// 	el.genStiff(); 
-
-// 	printVector(el.S); 
-
-// }

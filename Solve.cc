@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <cmath>
 
 #include "printVector.hh"
 
@@ -21,9 +22,21 @@ Solve::Solve(Mesh mesh, int Nt, double tb,
 
 	fcount = 0; 
 
+	cout << "a = " << a << endl; 
+	cout << "b = " << b << endl; 
+	cout << "c = " << c << endl; 
+	cout << "f0 = " << f0 << endl; 
+	cout << "alpha  = " << alpha << endl; 
+
 }
 
-void Solve::genLocal(Element el, double upwind, double upwind_prev, 
+double Solve::qf(double x, double t) {
+
+	return M_PI*cos(M_PI*x) + sin(M_PI*x);  
+
+}
+
+void Solve::genLocal(Element &el, double upwind, double upwind_prev, 
 		double t, double t_prev) {
 
 	for (int i=0; i<el.p; i++) {
@@ -43,7 +56,8 @@ void Solve::genLocal(Element el, double upwind, double upwind_prev,
 			el.rhs[i] -= el.f[j] * (1 - alpha)*(
 				-b*el.S[i][j] + c*el.M[i][j]); 
 
-			el.rhs[i] += q*el.M[i][j]; 
+			el.rhs[i] += qf(x, t)*el.M[i][j]; 
+			// el.rhs[i] += q*el.M[i][j]; 
 
 		}
 	}
@@ -55,9 +69,6 @@ void Solve::genLocal(Element el, double upwind, double upwind_prev,
 	// left boundary 
 	el.rhs[0] += b*(alpha*upwind + (1-alpha)*upwind_prev); 
 
-	printVector(el.A); 
-	printVector(el.rhs); 
-	cout << endl; 
 
 }
 
@@ -68,14 +79,15 @@ void Solve::solveSpace(double t, double t_prev) {
 
 	for (int i=0; i<mesh.N; i++) {
 
-		Element el = mesh.el[i]; 
+		Element &el = mesh.el[i]; 
 
 		// generate local system 
-		if (i != 0) {
+		if (i > 0) {
 
-			Element el_down = mesh.el[mesh.el.size()-2]; 
+			Element &el_down = mesh.el[i-1]; 
 
-			genLocal(el, el_down.f.back(), el_down.f_prev.back(), t, t_prev); 
+			genLocal(el, el_down.evaluate(-1), el_down.f_prev.back(), 
+				t, t_prev); 
 
 		}
 
@@ -123,19 +135,30 @@ void Solve::writeCurve(vector<double> &x, vector<double> &f) {
 	fcount += 1; 
 }
 
+double q(double x, double t) {
+
+	return M_PI*cos(M_PI*x) + sin(M_PI*x); 
+}
+
 int main() {
 
-	Mesh mesh(10, 1, 2); 
+	int Nx = 40; 
 
-	int Nt = 10; 
+	double xb = 1; 
+
+	int p = 2; 
+
+	Mesh mesh(Nx, xb, p); 
+
+	int Nt = 50;  
 	double tb = 1; 
-	double a = 1; 
+	double a = 0; 
 	double b = 1; 
 	double c = 1; 
 	double q = 0; 
 	double alpha = 1; 
 
-	double f0 = 1; 
+	double f0 = 0; 
 
 	// mesh.el[0].A[0][0] = 1; 
 

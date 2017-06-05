@@ -14,7 +14,7 @@ public:
 		double a, double b, double c, 
 		double q, double f0, double alpha); 
 
-	void genLocal(Element el, double upwind, double upwind_prev, 
+	void genLocal(Element &el, double upwind, double upwind_prev, 
 		double t, double t_prev);
 
 	void solveSpace(double t, double t_prev); 
@@ -35,6 +35,7 @@ public:
 	double a, b, c, q, f0; 
 	double alpha; 
 
+	double qf(double x, double t); 
 };
 
 #endif 
