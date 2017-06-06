@@ -8,13 +8,12 @@
 
 using namespace std; 
 
-Solve::Solve(Mesh mesh, int Nt, double tb, 
-	double a, double b, double c, 
-	double q, double f0, double alpha) : mesh(mesh), Nt(Nt), tb(tb), 
-		a(a), b(b), c(c), q(q), f0(f0), alpha(alpha) 
+Solve::Solve(Mesh mesh, double a, double b, double c, 
+	double q, double f0, double alpha) : 
+		mesh(mesh), a(a), b(b), c(c), q(q), f0(f0), alpha(alpha) 
 {
 
-	dt = tb/Nt; // time step 
+	t_prev = 0; // initialize previous time step 
 
 	t = linspace(0, tb, Nt+1); // vector of evenly spaced time steps  
 
@@ -35,8 +34,9 @@ double Solve::qf(double x, double t) {
 
 }
 
-void Solve::genLocal(Element &el, double upwind, double upwind_prev, 
-		double t, double t_prev) {
+void Solve::genLocal(Element &el, double upwind, double upwind_prev, double t) {
+
+	// printVector(el.M); 
 
 	for (int i=0; i<el.p; i++) {
 
@@ -69,7 +69,9 @@ void Solve::genLocal(Element &el, double upwind, double upwind_prev,
 
 }
 
-void Solve::solveSpace(double t, double t_prev) {
+void Solve::advance(double t) {
+
+	dt = t - t_prev; // time step 
 
 	vector<double> xout; 
 	vector<double> fout;  
@@ -83,14 +85,13 @@ void Solve::solveSpace(double t, double t_prev) {
 
 			Element &el_down = mesh.el[i-1]; 
 
-			genLocal(el, el_down.f.back(), el_down.f_prev.back(), 
-				t, t_prev); 
+			genLocal(el, el_down.f.back(), el_down.f_prev.back(), t); 
 
 		}
 
 		else {
 
-			genLocal(el, f0, 0, t, t_prev); 
+			genLocal(el, f0, 0, t); 
 
 		}
 
@@ -110,15 +111,8 @@ void Solve::solveSpace(double t, double t_prev) {
 
 	writeCurve(xout, fout, t); 
 
-}
+	t_prev = t; // update previous time step 
 
-void Solve::solveTime() {
-
-	for (int i=1; i<t.size(); i++) {
-
-		solveSpace(t[i], t[i-1]); 
-
-	}
 }
 
 void Solve::writeCurve(vector<double> &x, vector<double> &f, double t) {

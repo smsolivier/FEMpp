@@ -6,8 +6,6 @@
 #include <fstream>
 #include <cmath>
 
-#include "printVector.hh"
-
 using namespace std;  
 
 int main(int argc, char *argv[]) {
@@ -30,8 +28,14 @@ int main(int argc, char *argv[]) {
 
 	double f0 = 1;  
 
-	Solve sol(mesh, Nt, tb, a, b, c, q, f0, alpha); 
+	Solve sol(mesh, a, b, c, q, f0, alpha); 
 
-	sol.solveTime(); 
+	vector<double> t = linspace(0, tb, Nt+1); 
+
+	for (int i=1; i<t.size(); i++) {
+
+		sol.advance(t[i]); 
+
+	}
 
 }

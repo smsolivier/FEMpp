@@ -16,6 +16,7 @@ public:
 
 	Element(double start, double end, int p); // constructor 
 
+	void genBasis(); // generate legendre polynomial basis functions 
 	double Jacobian(double xi); // function for computing the jacobian 
 	void genMass(); // generate mass matrix 
 	void genStiff(); // generate stiffness matrix 

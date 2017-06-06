@@ -1,9 +1,23 @@
-#ifndef printVector_hh
-#define printVector_hh
+#include "helper.hh"
 
 #include <iostream>
 
-using namespace std; 
+vector<double> linspace(double start, double end, int N) {
+	/* generate N evenly spaced points between [start, end] */ 
+
+	vector<double> x(N); 
+
+	double h = (end - start)/(N-1); 
+
+	for (int i=0; i<N; i++) {
+
+		x[i] = h*i + start; 
+
+	}
+
+	return x; 
+
+}
 
 void printVector(vector<double> x) {
 
@@ -29,5 +43,3 @@ void printVector(vector<vector<double>> x) {
         cout << endl; 
     }
 }
-
-#endif 

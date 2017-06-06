@@ -5,21 +5,10 @@
 
 using namespace std; 
 
-inline vector<double> linspace(double start, double end, int N) {
-	/* generate N evenly spaced points between [start, end] */ 
+vector<double> linspace(double start, double end, int N); // generate evenly spaced points 
 
-	vector<double> x(N); 
+void printVector(vector<double> x); // print 1D vector 
 
-	double h = (end - start)/(N-1); 
-
-	for (int i=0; i<N; i++) {
-
-		x[i] = h*i + start; 
-
-	}
-
-	return x; 
-
-}
+void printVector(vector<vector<double>> x); // print 2D vector 
 
 #endif 

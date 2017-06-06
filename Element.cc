@@ -2,13 +2,11 @@
 #include <iostream>
 #include <cmath> 
 
-#include "basis.hh"
-
 #include "Element.hh" 
 
 #include "quad.hh"
-
-// #include "printVector.hh"
+#include "LinearSolver.hh"
+#include "helper.hh"
 
 using namespace std; 
 
@@ -23,7 +21,7 @@ Element::Element(double start, double end, int p) : start(start), end(end), p(p)
 	h = end - start; // element width 
 
 	// get basis functions 
-	genBasis(p, B, dB); 
+	genBasis(); 
 
 	// initialize sizes
 	f.resize(p); 
@@ -46,6 +44,40 @@ Element::Element(double start, double end, int p) : start(start), end(end), p(p)
 	genMass(); 
 	genStiff(); 
 
+}
+
+void Element::genBasis() {
+
+	vector<vector<double>> coef(p, vector<double>(p)); // store polynomial coefficients 
+
+	for (int k=0; k<p; k++) {
+
+		vector<vector<double>> A(p, vector<double>(p)); // store system for each basis function 
+
+		for (int i=0; i<p; i++) {
+
+			for (int j=0; j<p; j++) {
+
+				A[i][j] = pow(xloc[i], j); 
+
+			}
+		}
+
+		vector<double> b(p); // rhs 
+
+		b[k] = 1; 
+
+		int err = gauss_elim(p, A, coef[k], b); 
+
+	}
+
+    for (int i=0; i<p; i++) {
+
+        B.push_back(Polynomial(coef[i])); 
+
+        dB.push_back(B[i].derivative()); 
+
+    }
 }
 
 double Element::Jacobian(double xi) {
@@ -135,7 +167,13 @@ void Element::solve(vector<double> &xout, vector<double> &fout) {
 
 	}
 
-	int err = gauss(p, A, f, rhs); // solve system 
+	int err = gauss_elim(p, A, f, rhs); // solve system 
+
+	if (err == -1) {
+
+		cout << "--- Linear Solver error --- " << endl; 
+
+	}
 
 	// find centers between nodes 
 	vector<double> xc(p-1); 

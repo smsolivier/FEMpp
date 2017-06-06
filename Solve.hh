@@ -10,16 +10,12 @@ class Solve {
 
 public:
 
-	Solve(Mesh mesh, int Nt, double tb, 
-		double a, double b, double c, 
+	Solve(Mesh mesh, double a, double b, double c, 
 		double q, double f0, double alpha); 
 
-	void genLocal(Element &el, double upwind, double upwind_prev, 
-		double t, double t_prev);
+	void genLocal(Element &el, double upwind, double upwind_prev, double t);
 
-	void solveSpace(double t, double t_prev); 
-
-	void solveTime(); 
+	void advance(double t); 
 
 	void writeCurve(vector<double> &x, vector<double> &f, double t); 
 
@@ -34,6 +30,8 @@ public:
 	double tb; // end of time 
 	double a, b, c, q, f0; 
 	double alpha; 
+
+	double t_prev; // store previous time step 
 
 	double qf(double x, double t); 
 };

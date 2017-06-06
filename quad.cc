@@ -43,4 +43,3 @@ double GaussWeights(int n, vector<double> &mu, vector<double> &w) {
 
 	}
 }
-
