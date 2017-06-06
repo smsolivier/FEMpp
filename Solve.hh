@@ -21,7 +21,7 @@ public:
 
 	void solveTime(); 
 
-	void writeCurve(vector<double> &x, vector<double> &f); 
+	void writeCurve(vector<double> &x, vector<double> &f, double t); 
 
 	double dt; // store time step 
 

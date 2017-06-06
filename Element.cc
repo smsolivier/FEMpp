@@ -2,12 +2,13 @@
 #include <iostream>
 #include <cmath> 
 
-#include "quad.hh"
 #include "basis.hh"
 
 #include "Element.hh" 
 
-#include "printVector.hh"
+#include "quad.hh"
+
+// #include "printVector.hh"
 
 using namespace std; 
 
@@ -127,6 +128,12 @@ void Element::solve(vector<double> &xout, vector<double> &fout) {
 	// fout.resize(1); 
 
 	f_prev = f; // make copy of old one 
+
+	for (int i=0; i<f.size(); i++) {
+
+		f[i] = 0; 
+
+	}
 
 	int err = gauss(p, A, f, rhs); // solve system 
 
