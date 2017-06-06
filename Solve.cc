@@ -8,35 +8,17 @@
 
 using namespace std; 
 
-Solve::Solve(Mesh mesh, double a, double b, double c, 
-	double q, double f0, double alpha) : 
-		mesh(mesh), a(a), b(b), c(c), q(q), f0(f0), alpha(alpha) 
+Solve::Solve(Mesh *mesh, double a, double b, double c, 
+	double q, double f0, double alpha, int DIR) : 
+		mesh(mesh), a(a), b(b), c(c), q(q), f0(f0), alpha(alpha), DIR(DIR)
 {
 
 	t_prev = 0; // initialize previous time step 
 
-	t = linspace(0, tb, Nt+1); // vector of evenly spaced time steps  
-
-	fcount = 0; // counter for output files 
-
-	// output properties 
-	cout << "a = " << a << endl; 
-	cout << "b = " << b << endl; 
-	cout << "c = " << c << endl; 
-	cout << "f0 = " << f0 << endl; 
-	cout << "alpha  = " << alpha << endl; 
-
-}
-
-double Solve::qf(double x, double t) {
-
-	return a/tb*sin(M_PI*x/mesh.xb) + b*t/tb*M_PI/mesh.xb*cos(M_PI*x/mesh.xb) + c*t/tb*sin(M_PI*x/mesh.xb); 
-
 }
 
 void Solve::genLocal(Element &el, double upwind, double upwind_prev, double t) {
-
-	// printVector(el.M); 
+	/* generate local system for element el */ 
 
 	for (int i=0; i<el.p; i++) {
 
@@ -55,37 +37,75 @@ void Solve::genLocal(Element &el, double upwind, double upwind_prev, double t) {
 			el.rhs[i] -= el.f[j] * (1 - alpha)*(-b*el.S[i][j] + c*el.M[i][j]); 
 
 			// el.rhs[i] += qf(x, t)*el.M[i][j]; 
-			el.rhs[i] += q*el.M[i][j]; 
+			el.rhs[i] += (alpha*(el.Q[j] + q) + (1-alpha)*(el.Q_prev[j] + q))*el.M[i][j]; 
 
 		}
 	}
 
-	// apply upwinding 
-	el.A[el.A.size()-1][el.A.size()-1] += alpha*b; 
-	el.rhs.back() -= (1 - alpha) * el.f[el.f.size()-1] * b; 
+	// sweep left to right 
+	if (DIR == 0) {
 
-	// left boundary 
-	el.rhs[0] += b*(alpha*upwind + (1-alpha)*upwind_prev); 
+		// apply upwinding 
+		el.A[el.A.size()-1][el.A.size()-1] += alpha*b; 
+		el.rhs.back() -= (1 - alpha) * el.f[el.f.size()-1] * b; 
+
+		// left boundary 
+		el.rhs[0] += b*(alpha*upwind + (1-alpha)*upwind_prev); 
+
+	}
+
+	// sweep right to left 
+	else if (DIR == 1) {
+
+		el.A[0][0] -= alpha*b; 
+
+		el.rhs[0] += (1 - alpha) * el.f[0] * b; 
+
+		el.rhs.back() -= b * (alpha*upwind + (1-alpha)*upwind_prev); 
+
+	}
 
 }
 
-void Solve::advance(double t) {
+void Solve::sweepLR(double t) {
 
-	dt = t - t_prev; // time step 
+	for (int i=0; i<mesh->N; i++) {
 
-	vector<double> xout; 
-	vector<double> fout;  
-
-	for (int i=0; i<mesh.N; i++) {
-
-		Element &el = mesh.el[i]; 
+		Element &el = mesh->el[i]; 
 
 		// generate local system 
 		if (i > 0) {
 
-			Element &el_down = mesh.el[i-1]; 
+			Element &el_down = mesh->el[i-1];
 
-			genLocal(el, el_down.f.back(), el_down.f_prev.back(), t); 
+			genLocal(el, el_down.f.back(), el_down.f_prev.back(), t);
+
+		}
+
+		else {
+
+			genLocal(el, f0, 0, t); 
+
+		} 
+
+		el.solve();
+
+	}
+
+}
+
+void Solve::sweepRL(double t) {
+
+	for (int i=mesh->N-1; i>=0; i--) {
+
+		Element &el = mesh->el[i]; 
+
+		// generate local system 
+		if (i != mesh->N-1) {
+
+			Element &el_down = mesh->el[i+1]; // upwind element 
+
+			genLocal(el, el_down.f[0], el_down.f_prev[0], t); 
 
 		}
 
@@ -95,42 +115,28 @@ void Solve::advance(double t) {
 
 		}
 
-		vector<double> x_i; 
-		vector<double> f_i; 
-
-		el.solve(x_i, f_i);
-
-		for (int j=0; j<x_i.size(); j++) {
-
-			xout.push_back(x_i[j]); 
-			fout.push_back(f_i[j]); 
-
-		}
+		el.solve(); 
 
 	}
-
-	writeCurve(xout, fout, t); 
-
-	t_prev = t; // update previous time step 
 
 }
 
-void Solve::writeCurve(vector<double> &x, vector<double> &f, double t) {
+void Solve::advance(double t) {
 
-	ofstream file; 
+	dt = t - t_prev; // time step  
 
-	file.open("data/" + to_string(fcount) + ".curve"); 
+	if (DIR == 0) {
 
-	file << "# DG" << endl; 
-
-	for (int i=0; i<x.size(); i++) {
-
-		file << x[i] << " " << f[i] << endl; 
+		sweepLR(t); 
 
 	}
 
-	file.close(); 
+	else if (DIR == 1) {
 
-	fcount += 1; 
+		sweepRL(t); 
+
+	}
+
+	t_prev = t; // update previous time step 
 
 }

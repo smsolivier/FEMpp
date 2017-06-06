@@ -4,19 +4,23 @@ CFLAGS=-std=c++14
 COMPILE = $(CXX) $(CFLAGS)
 
 # main file with int main 
-MAIN_SRC = testSolve.cpp
+MAIN_SRC = testTransport.cpp
+# MAIN_SRC = testSolve.cpp
 MAIN_OBJ = $(subst .cpp,.o,$(MAIN_SRC))
 
 # source files 
-SRCS=Solve.cc Mesh.cc Element.cc Polynomial.cc quad.cc LinearSolver.cc helper.cc
-# SRCS+=Transport.cc
+SRCS=Solve.cc Mesh.cc Element.cc Polynomial.cc LinearSolver.cc Transport.cc 
+SRCS+=quad.cc helper.cc WriteCurve.cc 
 OBJ=$(subst .cc,.o,$(SRCS))
 
+# where to store object files 
 OBJDIR = obj/
 
+# add objdir to obj 
 OBJ := $(addprefix $(OBJDIR), $(OBJ))
 MAIN_OBJ := $(addprefix $(OBJDIR), $(MAIN_OBJ))
 
+# where to store output 
 DATADIR = data/
 
 # output exectuable name 
@@ -45,6 +49,7 @@ $(OBJDIR)%.o : %.cc
 # clean up 
 .PHONY : clean 
 clean :
-	rm -rf $(OBJDIR)
-	rm -f $(exe) 
-	rm -rf $(DATADIR)
+	rm -rf $(OBJDIR) # remove objects 
+	rm -f $(exe) # remove executable 
+	rm -rf $(DATADIR) # remove data directory 
+	rm -rf rzzeus* # remove weird rzzeus things 

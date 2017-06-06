@@ -22,7 +22,8 @@ public:
 	void genStiff(); // generate stiffness matrix 
 	double xiToX(double xi); // map xi to global x 
 	double evaluate(double xi); // evaluate f at xi 
-	void solve(vector<double> &x, vector<double> &f); 
+	void solve(); // solve local system 
+	void interpolate(vector<double> &xout, vector<double> &fout); // interpolate for plotting 
 
 	vector<double> xglob; // global x values within element 
 	vector<double> xloc; // local x values within element 
@@ -37,6 +38,10 @@ public:
 
 	// store solution 
 	vector<double> f; 
+
+	// store source 
+	vector<double> Q; 
+	vector<double> Q_prev; 
 
 	// store previous solution 
 	vector<double> f_prev; 

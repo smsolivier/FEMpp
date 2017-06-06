@@ -26,6 +26,8 @@ Element::Element(double start, double end, int p) : start(start), end(end), p(p)
 	// initialize sizes
 	f.resize(p); 
 	f_prev.resize(p); 
+	Q.resize(p); 
+	Q_prev.resize(p); 
 
 	A.resize(p); 
 	M.resize(p); 
@@ -103,7 +105,7 @@ void Element::genMass() {
 
 			auto func = [this, i, j] (double xi) {return B[i].evaluate(xi)*B[j].evaluate(xi)*Jacobian(xi); };
 
-			M[i][j] = GaussQuad(func); 
+			M[i][j] = GaussQuad(func, p+1); 
 
 		}
 	}
@@ -118,7 +120,7 @@ void Element::genStiff() {
 
 			auto func = [this, i, j] (double xi) {return dB[i].evaluate(xi)*B[j].evaluate(xi); }; 
 
-			S[i][j] = GaussQuad(func); 
+			S[i][j] = GaussQuad(func, p+1); 
 
 		}
 	}
@@ -150,14 +152,7 @@ double Element::evaluate(double xi) {
 
 }
 
-void Element::solve(vector<double> &xout, vector<double> &fout) {
-
-	// resize vectors 
-	xout.resize(p-1); 
-	fout.resize(p-1); 
-
-	// xout.resize(1); 
-	// fout.resize(1); 
+void Element::solve() {
 
 	f_prev = f; // make copy of old one 
 
@@ -175,25 +170,6 @@ void Element::solve(vector<double> &xout, vector<double> &fout) {
 
 	}
 
-	// find centers between nodes 
-	vector<double> xc(p-1); 
-
-	for (int i=1; i<p; i++) {
-
-		xc[i-1] = (xloc[i] - xloc[i-1])/2 + xloc[i-1]; 
-
-	}
-
-	for (int i=0; i<p-1; i++) {
-
-		xout[i] = xiToX(xc[i]); 
-		fout[i] = evaluate(xc[i]); 
-
-	}
-
-	// xout[0] = xiToX(0); 
-	// fout[0] = evaluate(0); 
-
 	// reset A, rhs 
 	for (int i=0; i<p; i++) {
 
@@ -204,6 +180,31 @@ void Element::solve(vector<double> &xout, vector<double> &fout) {
 		}
 
 		rhs[i] = 0; 
+
+	}
+
+}
+
+void Element::interpolate(vector<double> &xout, vector<double> &fout) {
+	/* interpolate between nodes */ 
+
+	vector<double> xc(p-1); // local midpoint location between nodes 
+
+	// compute midpoints 
+	for (int i=1; i<p; i++) {
+
+		xc[i-1] = (xloc[i] - xloc[i-1])/2 + xloc[i-1]; 
+
+	}
+
+	// update output vectors 
+	xout.resize(p-1); 
+	fout.resize(p-1); 
+
+	for (int i=0; i<p-1; i++) {
+
+		xout[i] = xiToX(xc[i]); // convert to global location 
+		fout[i] = evaluate(xc[i]); // evaluate at midpoint 
 
 	}
 

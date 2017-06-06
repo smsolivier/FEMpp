@@ -11,6 +11,8 @@ public:
 
 	Mesh(int N, double xb, int p); 
 
+	void getf(vector<double> &x, vector<double> &f); // return interpolated points 
+
 	int N; // number of elements 
 	double xb; // domain boundary 
 	int p; // order of accuracy in element 

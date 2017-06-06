@@ -10,30 +10,36 @@ class Solve {
 
 public:
 
-	Solve(Mesh mesh, double a, double b, double c, 
-		double q, double f0, double alpha); 
+	// constructor 
+	Solve(Mesh *mesh, double a, double b, double c, 
+		double q, double f0, double alpha, int DIR=0); 
 
-	void genLocal(Element &el, double upwind, double upwind_prev, double t);
+	// advance one time step 
+	void advance(double t);  
 
-	void advance(double t); 
+	// Mesh *mesh; // mesh object
 
-	void writeCurve(vector<double> &x, vector<double> &f, double t); 
+protected:
+
+	// generate local system in a single element 
+	void genLocal(Element &el, double upwind, double upwind_prev, double t); 
+
+	// sweep left to right 
+	void sweepLR(double t); 
+
+	// sweep right to left 
+	void sweepRL(double t); 
+
+	Mesh *mesh; // mesh object
+
+	int DIR; // direction of sweeping, 0=left -> right, 1=right -> left 
 
 	double dt; // store time step 
 
-	vector<double> t; // time 
-
-	int fcount; // store number of outputs written 
-
-	Mesh mesh; 
-	int Nt; // number of time steps 
-	double tb; // end of time 
-	double a, b, c, q, f0; 
-	double alpha; 
+	double a, b, c, q, f0, alpha; // constants 
 
 	double t_prev; // store previous time step 
 
-	double qf(double x, double t); 
 };
 
 #endif 
